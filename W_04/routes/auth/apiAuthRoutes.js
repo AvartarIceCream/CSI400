@@ -11,7 +11,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 router.post('/login', (req, res) => {
     try {
         const { username, password } = req.body;
-        sql.query('SELECT * FROM user WHERE username = ?', [username], (err, result) => {
+        sql.query('SELECT * FROM week4 WHERE username = ?', [username], (err, result) => {
             if (err) {
                 return res.status(500).json({ message: 'Database error' });
             }
@@ -22,7 +22,7 @@ router.post('/login', (req, res) => {
             }
 
             const token = jwt.sign(
-                { userId: user.id, username: user.username, role: user.role,  createdAt: user.createdAt },
+                { userId: user.user_id, username: user.username, role: user.role, createdAt: user.created_at },
                 SECRET_KEY,
                 { expiresIn: '1h' }
             );
@@ -37,19 +37,19 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
     try {
-        const { username, password, role} = req.body;
+        const { username, password } = req.body;
         const hashedPassword = bcrypt.hashSync(password, 8);
-        const insertUserQuery = 'INSERT INTO user (username, password, role, createdAt) VALUES (?, ?, ?, ?)';
-        const insertUserParams = [username, hashedPassword, role, new Date()];
+        const insertUserQuery = 'INSERT INTO week4 (username, password, role, created_at) VALUES (?, ?, ?, ?)';
+        const insertUserParams = [username, hashedPassword, "member", new Date()];
 
         sql.query(insertUserQuery, insertUserParams, (err, result) => {
             if (err) throw err;
-            res.status(200).json({message : "Created User"})
+            res.status(200).json({ message: "Created User" })
         });
     } catch (error) {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Error registering user' });
-    } 
-}); 
+    }
+});
 
 module.exports = router;
