@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>ทดสอบเรียก Private API</h1>
+    <button onclick="callAPI()">เรียก API</button>
+    <p id="result"></p>
+
+    <script>
+        function callAPI() {
+            fetch('http://localhost:3000/api/private-data', {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    document.getElementById('result').innerText = 'Error: ' + err.message;
+                });
+        }
+    </script>
+</body>
+
+</html>
