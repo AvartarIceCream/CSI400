@@ -38,10 +38,10 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
     try {
-        const { username, password, role } = req.body;
+        const { username, password} = req.body;
         const hashedPassword = bcrypt.hashSync(password, 8);
-        const insertUserQuery = 'INSERT INTO week4 (username, password, role) VALUES (?, ?, ?)';
-        const insertUserParams = [username, hashedPassword, role];
+        const insertUserQuery = 'INSERT INTO week6_user (username, password, role) VALUES (?, ?, ?)';
+        const insertUserParams = [username, hashedPassword, "member"];
 
         sql.query(insertUserQuery, insertUserParams, (err, result) => {
             if (err) throw err;

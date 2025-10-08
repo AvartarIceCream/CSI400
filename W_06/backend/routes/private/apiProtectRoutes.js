@@ -4,6 +4,12 @@ const sql = require('../../db/sql');
 const bcrypt = require('bcryptjs');
 const authenticateToken = require('../../middleware/authMiddleware');
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 sql.query('SELECT * FROM week6_user', [], (err, result) => {
     if (err) throw err;
     if (result.length === 0) {
@@ -13,6 +19,12 @@ sql.query('SELECT * FROM week6_user', [], (err, result) => {
         });
     }
 });   
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 router.get('/getAsset', authenticateToken, (req, res) => {
     try {
@@ -26,9 +38,10 @@ router.get('/getAsset', authenticateToken, (req, res) => {
     }
 });
 
-router.get('/getAsset/:param', authenticateToken, (req, res) => {
+router.get('/getAsset/:username', authenticateToken, (req, res) => {
     try {
-        sql.query('SELECT * FROM week6_asset', [], (err, result) => {
+        const { username } = req.params;
+        sql.query('SELECT * FROM week6_asset WHERE author = ?', [username], (err, result) => {
             if (err) throw err;
             res.status(200).json({ data: result });
         });
@@ -38,6 +51,48 @@ router.get('/getAsset/:param', authenticateToken, (req, res) => {
     }
 });
 
+router.get('/getAsset/minimum/:price', authenticateToken, (req, res) => {
+    try {
+        const { price } = req.params;
+        sql.query('SELECT * FROM week6_asset WHERE price >= ?', [price], (err, result) => {
+            if (err) throw err;
+            res.status(200).json({ data: result });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/getAsset/category/:ctg', authenticateToken, (req, res) => {
+    try {
+        const { ctg } = req.params;
+        sql.query('SELECT * FROM week6_asset WHERE category = ?', [ctg], (err, result) => {
+            if (err) throw err;
+            res.status(200).json({ data: result });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/getAsset/category/:ctg/:type', authenticateToken, (req, res) => {
+    try {
+        const { ctg, type } = req.params;
+        sql.query('SELECT * FROM week6_asset WHERE category = ?, type = ?', [ctg,type], (err, result) => {
+            if (err) throw err;
+            res.status(200).json({ data: result });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 module.exports = router;
