@@ -11,7 +11,7 @@ const auth = require('./routes/auth/apiAuthRoutes.js');
 
 const allowedDomains = [
     'http://localhost:5500',
-    // 'http://127.0.0.1:5500',
+    'http://127.0.0.1:5500',
     'https://api.banka.com',
     'https://api.bankb.com'
 ];
@@ -28,7 +28,7 @@ const corsOptions = {
         }
     },
     methods: ['GET'],
-    credentials: true, 
+    credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
