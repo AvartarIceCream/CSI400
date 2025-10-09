@@ -80,7 +80,7 @@ router.get('/getAsset/category/:ctg', authenticateToken, (req, res) => {
 router.get('/getAsset/category/:ctg/:type', authenticateToken, (req, res) => {
     try {
         const { ctg, type } = req.params;
-        sql.query('SELECT * FROM week6_asset WHERE category = ?, type = ?', [ctg,type], (err, result) => {
+        sql.query('SELECT * FROM week6_asset WHERE category = ? AND type = ?', [ctg,type], (err, result) => {
             if (err) throw err;
             res.status(200).json({ data: result });
         });

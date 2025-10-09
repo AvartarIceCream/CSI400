@@ -14,13 +14,12 @@
 
     <script>
         function callAPI() {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTk4OTk3NDksImV4cCI6MTc1OTkwMzM0OX0.ebPN8uYEBCawQLNVZtFDPFkMua8nafOa9Y5WRxm6dXM';
+            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTk5MDc1MjMsImV4cCI6MTc1OTkxMTEyM30.F_d2T-PTQ6GCZEADuDsKeg3fm9WlojeZcCXnpoHcCoI';
             fetch('http://localhost:3000/api/private/getAsset', {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
-                    'Origin': 'http://localhost:3000',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `bearer ${token}`
                 }
             })
                 .then(res => res.json())
@@ -28,8 +27,14 @@
                     document.getElementById('result').innerText = JSON.stringify(data, null, 2);
                 })
                 .catch(err => {
-                    document.getElementById('result').innerText = 'Error: ' + err.message;
-                });
+                    if (err.message === 'Failed to fetch') {
+                        document.getElementById('result').innerText = 'Error: CORS policy does not allow this origin';
+                    } else {
+                        console.log(err);
+                        document.getElementById('result').innerText = 'Error: ' + err.message;
+                    }
+                }
+                );
         }
     </script>
 </body>
