@@ -1,0 +1,215 @@
+{
+  "info": {
+    "name": "Users API Minimal Collection",
+    "_postman_id": "11111111-2222-3333-4444-555555555555",
+    "description": "Collection for /login and /users CRUD. Designed to run under Newman and set {{token}} automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login (set token)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"alice\", \"password\": \"password123\"}"
+        },
+        "description": "Logs in and stores token to environment."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function(){ pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.environment.set('token', json.token || '');",
+              "pm.test('Token exists', function(){ pm.expect(pm.environment.get('token')).to.not.be.empty; });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users - GET all",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function(){ pm.response.to.have.status(200); });",
+              "pm.test('Array body', function(){ pm.expect(pm.response.json()).to.be.an('array'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users - POST create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Postman-{{timestamp}}\", \"email\": \"postman{{timestamp}}@example.com\"}"
+        },
+        "description": "Creates a new user; stores id."
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('timestamp', Date.now());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', function(){ pm.response.to.have.status(201); });",
+              "var json = pm.response.json();",
+              "pm.environment.set('createdId', json.id);",
+              "pm.test('Has id', function(){ pm.expect(pm.environment.get('createdId')).to.exist; });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users - PUT update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{createdId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{createdId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Updated\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function(){ pm.response.to.have.status(200); });",
+              "pm.test('Name updated', function(){ pm.expect(pm.response.json()).to.have.property('name','Updated'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users - DELETE",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{createdId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{createdId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200/204', function(){ pm.expect([200,204]).to.include(pm.response.code); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "chai": "^6.2.0",
+    "mocha": "^11.7.4",
+    "supertest": "^7.1.4"
+  },
+  "name": "mochatest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha tests/*.js",
+    "dev": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,24 @@
+{
+  "name": "w_06",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --timeout 60000",
+    "test.newman": "mocha test/newman.test.js --timeout 120000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^1.12.2",
+    "chai": "^4.5.0",
+    "chai-http": "^5.1.2",
+    "mocha": "^11.7.4",
+    "newman": "^6.2.1",
+    "supertest": "^7.1.4"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

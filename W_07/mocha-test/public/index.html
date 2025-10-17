@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, black 0%, gray 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-run {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-run:hover {
+            background: green;
+            transform: translateY(-2px);
+        }
+
+        .btn-clear {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #e68900;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .test-results, .api-tester {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .test-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #ddd;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        .test-item.passed {
+            border-left-color: #4CAF50;
+            background: #e8f5e8;
+        }
+
+        .test-item.failed {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+
+        .test-item.running {
+            border-left-color: #2196F3;
+            background: #e3f2fd;
+        }
+
+        .test-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .test-status {
+            font-size: 0.9em;
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .status-passed { background: #4CAF50; color: white; }
+        .status-failed { background: #f44336; color: white; }
+        .status-running { background: #2196F3; color: white; }
+
+        .test-details {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .api-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        select, input, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        .response-area {
+            margin-top: 20px;
+        }
+
+        .response-box {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-passed { color: #4CAF50; }
+        .stat-failed { color: #f44336; }
+        .stat-total { color: #2196F3; }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>CSI400: Workshop #API Testing Dashboard</h2>
+            <p>Real-time API Testing and Results</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-run" onclick="runAllTests()">▶ Run All Tests</button>
+            <button class="btn btn-clear" onclick="clearResults()">🗑️ Clear Results</button>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number stat-total" id="totalTests">0</div>
+                    <div>Total Tests</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number stat-passed" id="passedTests">0</div>
+                    <div>Passed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number stat-failed" id="failedTests">0</div>
+                    <div>Failed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <div class="test-results">
+                <h2 class="section-title">📊 Test Results</h2>
+                <div id="testResults">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Click "Run All Tests" to start testing</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-tester">
+                <h2 class="section-title">🔧 Manual API Tester</h2>
+                <div class="api-form">
+                    <div class="form-group">
+                        <label for="apiMethod">HTTP Method:</label>
+                        <select id="apiMethod">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apiUrl">API Endpoint:</label>
+                        <input type="text" id="apiUrl" value="/api/items" placeholder="Enter API endpoint">
+                    </div>
+                    
+                    <div class="form-group" id="requestBodyGroup" style="display: none;">
+                        <label for="requestBody">Request Body (JSON):</label>
+                        <textarea id="requestBody" placeholder='{"name": "test", "price": 100}'></textarea>
+                    </div>
+                    
+                    <button class="btn btn-run" onclick="testSingleEndpoint()">Test This Endpoint</button>
+                </div>
+
+                <div class="response-area">
+                    <h3>Response:</h3>
+                    <div class="response-box" id="apiResponse">
+                        Response will appear here...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
