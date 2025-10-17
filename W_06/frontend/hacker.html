@@ -13,7 +13,7 @@
       --text: #cfd8dc;
       --muted: #7a8a98;
       --neo1: #00e676;
-      --neo2: #00bcd4;
+      --neo2: #00bcd4
     }
 
     * {
@@ -23,16 +23,14 @@
     body.dark {
       margin: 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Thai", monospace;
-      background:
-        radial-gradient(1200px 800px at 10% -10%, rgba(0, 188, 212, .12), transparent 60%),
-        radial-gradient(1000px 700px at 100% 0%, rgba(0, 230, 118, .10), transparent 55%),
-        var(--bg);
+      background: radial-gradient(1200px 800px at 10% -10%, rgba(0, 188, 212, .12), transparent 60%),
+        radial-gradient(1000px 700px at 100% 0%, rgba(0, 230, 118, .10), transparent 55%), var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 24px
     }
 
     .frame {
@@ -90,28 +88,30 @@
       gap: 8px;
       padding: 10px 14px;
       border-radius: 10px;
-      background: linear-gradient(180deg, rgba(0, 230, 118, .16), rgba(0, 188, 212, .14));
+      background:
+        linear-gradient(180deg, rgba(0, 230, 118, .16), rgba(0, 188, 212, .14));
       color: #e2f1f8;
       border: 1px solid var(--border);
       cursor: pointer;
       font-weight: 700;
       transition: .2s;
       box-shadow: inset 0 0 0 1px rgba(0, 230, 118, .25), 0 10px 20px rgba(0, 0, 0, .35);
-      width: 100%;
+      width: 100%
     }
 
     .btn:hover {
       filter: brightness(1.05)
     }
 
-    input {
+    input,
+    select {
       padding: 10px;
       border-radius: 8px;
       background: #0a1117;
       border: 1px solid #173042;
       color: #cde8f5;
       outline: none;
-      width: 100%;
+      width: 100%
     }
 
     input:focus {
@@ -125,6 +125,11 @@
       align-items: center
     }
 
+    .row {
+      display: grid;
+      gap: 8px
+    }
+
     .token-pill {
       padding: 6px 10px;
       border-radius: 999px;
@@ -134,7 +139,6 @@
       font-size: .85rem
     }
 
-    /* asset view dark */
     .asset-controls {
       display: grid;
       gap: 10px;
@@ -142,7 +146,7 @@
       margin-bottom: 12px
     }
 
-    .asset-controls .row {
+    .asset-controls .row2 {
       display: flex;
       gap: 8px;
       flex-wrap: wrap
@@ -219,6 +223,31 @@
       padding-left: 8px;
       color: #9fe1ff
     }
+
+    .subtle {
+      color: #9bb0bd;
+      font-size: .85rem
+    }
+
+    .switch {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .mono {
+      font-family: ui-monospace, Menlo, Consolas, monospace
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background: #0a1117;
+      border: 1px solid #173042;
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 300px;
+      overflow: auto
+    }
   </style>
 </head>
 
@@ -230,20 +259,29 @@
     </div>
 
     <div class="panel">
-      <!-- Login -->
-      <h2 style="margin:0">เข้าสู่ระบบ</h2>
-      <input id="login-username" placeholder="username" />
-      <input id="login-password" type="password" placeholder="password" />
-      <input id="login-endpoint" placeholder="Login Endpoint" value="http://localhost:3000/api/auth/login" />
-      <button class="btn" onclick="login()">Login & Save Token</button>
-      <div class="inline">
-        <button class="btn" style="background:rgba(239,83,80,.18)" onclick="logout()">Logout / Clear Token</button>
-        <span id="token-status" class="token-pill" style="display:none;"></span>
+
+      <!-- Auth (optional) -->
+      <h2 style="margin:0">Auth (optional สำหรับเทส CORS)</h2>
+      <div class="row">
+        <div class="switch">
+          <input type="checkbox" id="use-auth" checked />
+          <label for="use-auth" class="subtle">ส่ง Authorization: Bearer &nbsp;<span
+              class="mono">(เปิด/ปิดได้)</span></label>
+        </div>
+        <input id="manual-token" placeholder="ใส่โทเค็นด้วยตัวเอง (จะถูกเก็บใน localStorage[hacker_token])" />
+        <div class="inline">
+          <button class="btn" id="save-token-btn">Save Token</button>
+          <button class="btn" id="clear-token-btn" style="background:rgba(239,83,80,.18)">Clear Token</button>
+          <span id="token-status" class="token-pill" style="display:none;"></span>
+        </div>
+        <p class="subtle">Tip: ตั้งค่าเริ่มต้นผ่าน URL ได้ เช่น <span class="mono">?token=xxx&useAuth=0</span></p>
       </div>
 
-      <!-- API -->
+      <!-- API controls -->
       <h2 style="margin:8px 0 0 0">เรียก API</h2>
-      <button class="btn" onclick="runRequest('all')">GET /getAsset</button>
+      <div class="inline">
+        <button class="btn" onclick="runRequest('all')">GET /getAsset</button>
+      </div>
       <input id="in-username" placeholder="username" />
       <button class="btn" onclick="runRequest('username')">/getAsset/:username</button>
       <input id="in-min" placeholder="minimum price" />
@@ -254,15 +292,20 @@
       <input id="in-type2" placeholder="type" />
       <button class="btn" onclick="runRequest('ctgtype')">/getAsset/category/:ctg/:type</button>
 
-      <!-- View -->
+      <!-- Search + KPI -->
       <div class="asset-controls">
-        <div class="row">
-          <!-- เหลือเฉพาะช่อง search -->
+        <div class="row2">
           <input id="q-search" placeholder="ค้นหาชื่อหรือคำอธิบาย (search)" />
         </div>
         <div class="kpi" id="kpi"></div>
       </div>
+
+      <!-- View -->
       <div id="asset-container"></div>
+
+      <!-- Raw result (ช่วยเทส CORS / header) -->
+      <h3 style="margin:0">Raw Response</h3>
+      <pre id="raw"></pre>
     </div>
   </div>
 
@@ -270,56 +313,96 @@
     const API_BASE = 'http://localhost:3000/api/private';
     const TOKEN_KEY = 'hacker_token';
 
+    const el = (id) => document.getElementById(id);
+    const qs = new URLSearchParams(location.search);
+
+    // ----- Token helpers -----
     const getToken = () => localStorage.getItem(TOKEN_KEY) || '';
     const setToken = (t) => { localStorage.setItem(TOKEN_KEY, t); paintToken() };
     const clearToken = () => { localStorage.removeItem(TOKEN_KEY); paintToken() };
 
-    async function login() {
-      const u = login_username.value.trim();
-      const p = login_password.value;
-      const endpoint = login_endpoint.value.trim() || 'http://localhost:3000/api/auth/login';
-      if (!u || !p) return alert('กรอก username/password');
-      try {
-        const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
-        if (!res.ok) throw new Error('Login failed: ' + await res.text());
-        const data = await res.json();
-        if (!data.token) throw new Error('ไม่มี token ในผลลัพธ์');
-        setToken(data.token); alert('Login สำเร็จ!');
-      } catch (e) { console.error(e); alert(e.message) }
-    }
-    function logout() { clearToken(); alert('ลบโทเค็นแล้ว') }
+    // init from query string
+    (function initFromQS() {
+      const t = qs.get('token'); if (t) setToken(t);
+      const ua = qs.get('useAuth'); if (ua === '0' || ua === 'false') el('use-auth').checked = false;
+    })();
+
+    // UI: save/clear token
+    el('manual-token').value = getToken();
+    el('save-token-btn').addEventListener('click', () => {
+      setToken(el('manual-token').value.trim());
+      alert('Saved token แล้ว');
+    });
+    el('clear-token-btn').addEventListener('click', () => {
+      clearToken();
+      el('manual-token').value = '';
+      alert('ลบ token ใน localStorage แล้ว');
+    });
 
     function paintToken() {
-      const t = getToken(), el = token_status;
-      if (t) { const short = t.length > 16 ? t.slice(0, 8) + '...' + t.slice(-6) : t; el.textContent = 'Token: ' + short; el.style.display = 'inline-block' }
-      else { el.textContent = ''; el.style.display = 'none' }
+      const t = getToken(), s = el('token-status');
+      if (t) {
+        const short = t.length > 16 ? t.slice(0, 8) + '...' + t.slice(-6) : t;
+        s.textContent = 'Token: ' + short; s.style.display = 'inline-block';
+      } else { s.textContent = ''; s.style.display = 'none' }
     }
 
+    // ----- Request core (ส่งแบบมี/ไม่มี Authorization ได้) -----
     async function request(path) {
-      const token = getToken(); if (!token) throw new Error('ยังไม่ได้ Login');
-      const res = await fetch(`${API_BASE}${path}`, { method: 'GET', credentials: 'include', headers: { 'Authorization': `Bearer ${token}` } });
-      const tx = await res.text(); try { return JSON.parse(tx) } catch { return tx }
+      const headers = {};
+      if (el('use-auth').checked) {
+        const tk = getToken();
+        if (!tk) console.warn('use-auth เปิดอยู่ แต่ไม่มี token ใน localStorage');
+        headers['Authorization'] = `Bearer ${tk || ''}`;
+      }
+      // ช่วยดู CORS: โชว์ผลทั้ง status/headers/body
+      const url = `${API_BASE}${path}`;
+      let res, text;
+      try {
+        res = await fetch(url, { method: 'GET', credentials: 'include', headers });
+        text = await res.text();
+      } catch (err) {
+        el('raw').textContent = `FETCH ERROR:\n${err?.message || err}`;
+        throw err;
+      }
+
+      // แสดง raw
+      try {
+        const hdrs = [...res.headers.entries()].map(([k, v]) => `${k}: ${v}`).join('\n');
+        el('raw').textContent =
+          `URL: ${url}
+Status: ${res.status} ${res.statusText}
+${hdrs ? '--- Headers ---\n' + hdrs + '\n' : ''}--- Body ---
+${text}`;
+      } catch (_) { /* ignore */ }
+
+      try { return JSON.parse(text) } catch { return text }
     }
+
+    // ----- API shortcuts -----
     const getAll = () => request('/getAsset');
-    const getByUsername = u => request(`/getAsset/${encodeURIComponent(u)}`);
-    const getByMinPrice = p => request(`/getAsset/minimum/${encodeURIComponent(p)}`);
-    const getByCategory = c => request(`/getAsset/category/${encodeURIComponent(c)}`);
+    const getByUsername = (u) => request(`/getAsset/${encodeURIComponent(u)}`);
+    const getByMinPrice = (p) => request(`/getAsset/minimum/${encodeURIComponent(p)}`);
+    const getByCategory = (c) => request(`/getAsset/category/${encodeURIComponent(c)}`);
     const getByCategoryType = (c, t) => request(`/getAsset/category/${encodeURIComponent(c)}/${encodeURIComponent(t)}`);
 
+    // ----- Render helpers -----
     const NF_THB = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 0 });
     let ORIGINAL_DATA = []; let FILTER_WIRED = false;
     const escapeHtml = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
     function filterBySearch(d) {
-      const q = q_search.value.trim().toLowerCase();
+      const q = el('q-search').value.trim().toLowerCase();
       return d.filter(x => {
         const hay = (x.name + ' ' + (x.description || '')).toLowerCase();
         return !q || hay.includes(q);
       });
     }
     function groupByCategory(items) { const g = {}; for (const it of items) { (g[it.category] ??= []).push(it) } return g }
+
     function renderGrid(items) {
-      if (!items.length) { asset_container.innerHTML = '<div class="muted">ไม่พบข้อมูลที่ตรงเงื่อนไข</div>'; return }
+      const wrap = el('asset-container');
+      if (!items.length) { wrap.innerHTML = '<div class="subtle">ไม่พบข้อมูลที่ตรงเงื่อนไข</div>'; return }
       const groups = groupByCategory(items); const order = Object.keys(groups).sort(); let html = '';
       for (const ctg of order) {
         html += `<h3 class="group-title">${ctg}</h3><div class="asset-grid">`;
@@ -330,39 +413,57 @@
               <span class="badge">${escapeHtml(it.category)}</span>
               <span class="badge type">${escapeHtml(it.type)}</span>
               <span class="badge author">@${escapeHtml(it.author)}</span>
-              <span class="price">฿${NF_THB.format(it.price)}</span>
+              <span class="price">฿${NF_THB.format(+it.price || 0)}</span>
             </div>
             <p class="asset-desc">${escapeHtml(it.description || '')}</p>
-            <div class="muted">#${it.id}</div>
-          </article>
-        `).join('');
+            <div class="subtle">#${it.id}</div>
+          </article>`).join('');
         html += '</div>';
       }
-      asset_container.innerHTML = html;
+      wrap.innerHTML = html;
     }
+
     function renderKPI(items) {
-      if (!items.length) { kpi.textContent = 'รายการ: 0'; return }
-      const total = items.reduce((s, x) => s + (+x.price || 0), 0), min = Math.min(...items.map(x => x.price)), max = Math.max(...items.map(x => x.price));
-      kpi.innerHTML = `<span>รายการ: ${items.length}</span><span>ราคารวม: ฿${NF_THB.format(total)}</span><span>ต่ำสุด: ฿${NF_THB.format(min)}</span><span>สูงสุด: ฿${NF_THB.format(max)}</span>`;
+      const k = el('kpi');
+      if (!items.length) { k.textContent = 'รายการ: 0'; return }
+      const total = items.reduce((s, x) => s + (+x.price || 0), 0);
+      const min = Math.min(...items.map(x => +x.price || 0));
+      const max = Math.max(...items.map(x => +x.price || 0));
+      k.innerHTML =
+        `<span>รายการ: ${items.length}</span>
+         <span>ราคารวม: ฿${NF_THB.format(total)}</span>
+         <span>ต่ำสุด: ฿${NF_THB.format(min)}</span>
+         <span>สูงสุด: ฿${NF_THB.format(max)}</span>`;
     }
+
     function wireFilterEvents() {
       if (FILTER_WIRED) return; FILTER_WIRED = true;
-      q_search.addEventListener('input', () => { const f = filterBySearch(ORIGINAL_DATA); renderKPI(f); renderGrid(f) })
+      el('q-search').addEventListener('input', () => {
+        const f = filterBySearch(ORIGINAL_DATA);
+        renderKPI(f); renderGrid(f);
+      });
     }
+
     function renderAssets(arr) {
       ORIGINAL_DATA = Array.isArray(arr) ? arr.slice() : [];
       wireFilterEvents();
-      const f = filterBySearch(ORIGINAL_DATA); renderKPI(f); renderGrid(f);
+      const f = filterBySearch(ORIGINAL_DATA);
+      renderKPI(f); renderGrid(f);
     }
 
+    // ----- Action handlers -----
     async function runRequest(kind) {
       try {
         if (kind === 'all') { const r = await getAll(); return renderAssets(r.data ?? r) }
-        if (kind === 'username') { const r = await getByUsername(in_username.value.trim()); return renderAssets(r.data ?? r) }
-        if (kind === 'min') { const r = await getByMinPrice(in_min.value.trim()); return renderAssets(r.data ?? r) }
-        if (kind === 'ctg') { const r = await getByCategory(in_ctg.value.trim()); return renderAssets(r.data ?? r) }
-        if (kind === 'ctgtype') { const r = await getByCategoryType(in_ctg2.value.trim(), in_type2.value.trim()); return renderAssets(r.data ?? r) }
-      } catch (e) { console.error(e); alert(e.message) }
+        if (kind === 'username') { const v = el('in-username').value.trim(); const r = await getByUsername(v); return renderAssets(r.data ?? r) }
+        if (kind === 'min') { const v = el('in-min').value.trim(); const r = await getByMinPrice(v); return renderAssets(r.data ?? r) }
+        if (kind === 'ctg') { const v = el('in-ctg').value.trim(); const r = await getByCategory(v); return renderAssets(r.data ?? r) }
+        if (kind === 'ctgtype') { const c = el('in-ctg2').value.trim(); const t = el('in-type2').value.trim(); const r = await getByCategoryType(c, t); return renderAssets(r.data ?? r) }
+      } catch (e) {
+        console.error(e);
+        // raw panel จะโชว์ error ของ fetch แล้ว ถ้าต้องการ popup ด้วยก็:
+        alert(e.message);
+      }
     }
 
     window.addEventListener('DOMContentLoaded', paintToken);
